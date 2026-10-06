@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Home - Autumn Portfolio{% endblock %}
+{% block content %}
+<h1>Welcome to My Flask Portfolio</h1>
+<p>Embracing crisp air, cozy tones, and clean code. This web application is built for Laboratory Exercise 4 using Flask,
+    Jinja2 templates, and custom data structures.</p>
+<img src="{{ url_for('static', filename='image.jpg') }}" alt="Profile Image" width="200"
+    onerror="this.style.display='none'">
+{% endblock %}
