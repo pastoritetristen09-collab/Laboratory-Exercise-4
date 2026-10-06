@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Contact - Hogwarts Portfolio{% endblock %}
+{% block content %}
+<h1>Owl Post & Contact Info</h1>
+
+<div
+    style="margin-bottom: 25px; background: #fdfaf3; padding: 15px; border-left: 4px solid #c5a059; border-radius: 6px;">
+    <p><strong>Email:</strong> {{ contact.email }}</p>
+    <p><strong>Facebook Name:</strong> {{ contact.fbname }}</p>
+    <p><strong>Contact Number:</strong> {{ contact.number }}</p>
+    <p><strong>GitHub Repository:</strong> <a href="{{ contact.github }}" target="_blank">{{ contact.github }}</a></p>
+    <p><strong>Note:</strong> {{ contact.note }}</p>
+</div>
+
+<h3>Update Contact Details</h3>
+<form method="POST">
+    <label>Email Address:</label>
+    <input type="email" name="email" value="{{ contact.email }}" required>
+
+    <label>Facebook Name:</label>
+    <input type="text" name="fbname" value="{{ contact.fbname }}" required>
+
+    <label>Contact Number:</label>
+    <input type="text" name="number" value="{{ contact.number }}" required>
+
+    <label>GitHub Link:</label>
+    <input type="url" name="github" value="{{ contact.github }}" required>
+
+    <label>Note / Status:</label>
+    <textarea name="note" rows="2" required>{{ contact.note }}</textarea>
+
+    <button type="submit">Save Contact Info</button>
+</form>
+{% endblock %}

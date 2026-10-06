@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Linked List - Hogwarts Portfolio{% endblock %}
+{% block content %}
+<h1>Magical Linked List Visualizer</h1>
+<p>Manage data nodes with pointer operations: add elements, remove head, remove tail, or clear.</p>
+
+<form method="POST" style="margin-bottom: 20px;">
+    <input type="text" name="value" placeholder="Enter node value / spell name">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+        <button type="submit" name="action" value="add">Add Node</button>
+        <button type="submit" name="action" value="remove_head" class="btn-danger">Remove Head</button>
+        <button type="submit" name="action" value="remove_tail" class="btn-danger">Remove Tail</button>
+        <button type="submit" name="action" value="clear" class="btn-danger">Clear List</button>
+    </div>
+</form>
+
+<h3 style="margin-top: 30px;">Current Linked List Structure:</h3>
+<div style="display: flex; align-items: center; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+    {% if elements %}
+    {% for item in elements %}
+    <div
+        style="padding: 10px 15px; border: 2px solid #74121d; background: #fff; border-radius: 6px; font-weight: bold; color: #74121d;">
+        {{ item }}
+    </div>
+    {% if not loop.last %} <span style="font-weight: bold; color: #c5a059; font-size: 1.2rem;">➔</span> {% endif %}
+    {% endfor %}
+    {% else %}
+    <p>The linked list is currently empty.</p>
+    {% endif %}
+</div>
+{% endblock %}
