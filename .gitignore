@@ -1,0 +1,5 @@
+__pycache__/
+data/profile.json
+static/uploads/photos/*
+static/uploads/code/*
+!static/uploads/*/.gitkeep

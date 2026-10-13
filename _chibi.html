@@ -1,0 +1,138 @@
+{# Original chibi characters drawn as inline SVG. Robes and scarves follow the active theme. #}
+
+{% macro student(kind='girl', hair='#2b1b1b', skin='#f4cba3') -%}
+<svg viewBox="0 -10 120 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="60" cy="147" rx="34" ry="5" fill="#000" opacity=".25"/>
+  <path d="M32 148 C30 112 44 100 60 100 C76 100 90 112 88 148 Z" fill="var(--primary)"/>
+  <circle cx="36" cy="124" r="6" fill="{{ skin }}"/>
+  <circle cx="84" cy="124" r="6" fill="{{ skin }}"/>
+  <line x1="84" y1="124" x2="102" y2="100" stroke="#7a4b24" stroke-width="3" stroke-linecap="round"/>
+  <text x="102" y="97" font-size="14" text-anchor="middle" fill="var(--accent)">&#10022;</text>
+  <rect x="44" y="95" width="32" height="10" rx="5" fill="var(--accent)"/>
+  <rect x="64" y="100" width="10" height="24" rx="3" fill="var(--accent)"/>
+  <line x1="64" y1="109" x2="74" y2="109" stroke="var(--primary)" stroke-width="3"/>
+  <line x1="64" y1="116" x2="74" y2="116" stroke="var(--primary)" stroke-width="3"/>
+  {% if kind == 'girl' %}
+  <ellipse cx="60" cy="62" rx="34" ry="32" fill="{{ hair }}"/>
+  <ellipse cx="29" cy="88" rx="7" ry="14" fill="{{ hair }}"/>
+  <ellipse cx="91" cy="88" rx="7" ry="14" fill="{{ hair }}"/>
+  <circle cx="29" cy="99" r="3.5" fill="var(--accent)"/>
+  <circle cx="91" cy="99" r="3.5" fill="var(--accent)"/>
+  {% else %}
+  <ellipse cx="60" cy="60" rx="33" ry="30" fill="{{ hair }}"/>
+  {% endif %}
+  <ellipse cx="60" cy="64" rx="31" ry="28" fill="{{ skin }}"/>
+  <path d="M30 58 C34 36 54 34 60 42 C66 34 86 36 90 58 C80 48 70 48 60 52 C50 48 40 48 30 58 Z" fill="{{ hair }}"/>
+  <ellipse cx="47" cy="68" rx="5.5" ry="7" fill="#2a1a14"/>
+  <ellipse cx="73" cy="68" rx="5.5" ry="7" fill="#2a1a14"/>
+  <circle cx="45.2" cy="65.5" r="2.3" fill="#fff"/>
+  <circle cx="71.2" cy="65.5" r="2.3" fill="#fff"/>
+  <circle cx="49" cy="71" r="1" fill="#fff"/>
+  <circle cx="75" cy="71" r="1" fill="#fff"/>
+  {% if kind == 'boy' %}
+  <circle cx="47" cy="68" r="10" fill="none" stroke="#3a2a1a" stroke-width="2"/>
+  <circle cx="73" cy="68" r="10" fill="none" stroke="#3a2a1a" stroke-width="2"/>
+  <line x1="57" y1="68" x2="63" y2="68" stroke="#3a2a1a" stroke-width="2"/>
+  {% endif %}
+  <ellipse cx="38" cy="77" rx="5" ry="3" fill="#ff8f8f" opacity=".55"/>
+  <ellipse cx="82" cy="77" rx="5" ry="3" fill="#ff8f8f" opacity=".55"/>
+  <path d="M55 79 Q60 84 65 79" stroke="#7a3b2e" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <ellipse cx="60" cy="40" rx="40" ry="9" fill="var(--hat)"/>
+  <path d="M34 38 C42 20 54 6 76 -6 C70 8 82 22 86 38 Z" fill="var(--hat)"/>
+  <path d="M36 33 Q60 42 85 33 L86 38 Q60 47 35 39 Z" fill="var(--accent)"/>
+  <text x="60" y="26" font-size="12" text-anchor="middle" fill="var(--accent)">&#9733;</text>
+</svg>
+{%- endmacro %}
+
+{% macro owl() -%}
+<svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="60" cy="126" rx="30" ry="4.5" fill="#000" opacity=".25"/>
+  <path d="M32 66 L30 40 L52 58 Z" fill="#8a5b36"/>
+  <path d="M88 66 L90 40 L68 58 Z" fill="#8a5b36"/>
+  <ellipse cx="60" cy="90" rx="36" ry="36" fill="#a06f45"/>
+  <ellipse cx="60" cy="100" rx="23" ry="25" fill="#f3dfba"/>
+  <ellipse cx="27" cy="98" rx="9" ry="20" fill="#8a5b36"/>
+  <ellipse cx="93" cy="98" rx="9" ry="20" fill="#8a5b36"/>
+  <circle cx="45" cy="72" r="15" fill="#fff"/>
+  <circle cx="75" cy="72" r="15" fill="#fff"/>
+  <circle cx="46" cy="73" r="8.5" fill="#2a1a14"/>
+  <circle cx="74" cy="73" r="8.5" fill="#2a1a14"/>
+  <circle cx="43.5" cy="70" r="3" fill="#fff"/>
+  <circle cx="71.5" cy="70" r="3" fill="#fff"/>
+  <path d="M55 82 L65 82 L60 93 Z" fill="#f0a020"/>
+  <ellipse cx="33" cy="88" rx="5" ry="3" fill="#ff8f8f" opacity=".5"/>
+  <ellipse cx="87" cy="88" rx="5" ry="3" fill="#ff8f8f" opacity=".5"/>
+  <rect x="38" y="104" width="44" height="9" rx="4.5" fill="var(--accent)"/>
+  <line x1="50" y1="104" x2="50" y2="113" stroke="var(--primary)" stroke-width="3"/>
+  <line x1="70" y1="104" x2="70" y2="113" stroke="var(--primary)" stroke-width="3"/>
+  <path d="M46 122 l-3 6 M50 122 l0 6 M70 122 l0 6 M74 122 l3 6" stroke="#f0a020" stroke-width="3" stroke-linecap="round"/>
+</svg>
+{%- endmacro %}
+
+{% macro pumpkin() -%}
+<svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="60" cy="126" rx="40" ry="5" fill="#000" opacity=".25"/>
+  <ellipse cx="38" cy="92" rx="26" ry="32" fill="#d9620f"/>
+  <ellipse cx="82" cy="92" rx="26" ry="32" fill="#d9620f"/>
+  <ellipse cx="60" cy="92" rx="26" ry="35" fill="#f28a2e"/>
+  <rect x="55" y="52" width="10" height="14" rx="3" fill="#5b7a2a"/>
+  <path d="M65 56 Q80 46 84 58 Q72 56 65 62 Z" fill="#7aa338"/>
+  <ellipse cx="47" cy="92" rx="5" ry="6.5" fill="#3a1a08"/>
+  <ellipse cx="73" cy="92" rx="5" ry="6.5" fill="#3a1a08"/>
+  <circle cx="45.2" cy="89.5" r="2.2" fill="#fff"/>
+  <circle cx="71.2" cy="89.5" r="2.2" fill="#fff"/>
+  <ellipse cx="38" cy="102" rx="5" ry="3" fill="#ff7a6b" opacity=".6"/>
+  <ellipse cx="82" cy="102" rx="5" ry="3" fill="#ff7a6b" opacity=".6"/>
+  <path d="M52 101 Q60 110 68 101" stroke="#3a1a08" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  <g transform="rotate(-14 60 56)">
+    <ellipse cx="60" cy="56" rx="28" ry="6" fill="var(--hat)"/>
+    <path d="M42 55 C48 42 56 34 70 28 C66 38 72 46 78 55 Z" fill="var(--hat)"/>
+    <path d="M43 52 Q60 60 77 52 L78 56 Q60 64 42 57 Z" fill="var(--accent)"/>
+  </g>
+</svg>
+{%- endmacro %}
+
+{% macro cat() -%}
+<svg viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="60" cy="126" rx="34" ry="4.5" fill="#000" opacity=".25"/>
+  <path d="M90 112 C112 112 114 86 100 80" stroke="#2a2530" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <ellipse cx="60" cy="106" rx="30" ry="22" fill="#2a2530"/>
+  <ellipse cx="44" cy="122" rx="10" ry="5" fill="#2a2530"/>
+  <ellipse cx="76" cy="122" rx="10" ry="5" fill="#2a2530"/>
+  <path d="M30 64 L30 34 L52 52 Z" fill="#2a2530"/>
+  <path d="M90 64 L90 34 L68 52 Z" fill="#2a2530"/>
+  <path d="M34 56 L34 42 L46 52 Z" fill="#e58aa0"/>
+  <path d="M86 56 L86 42 L74 52 Z" fill="#e58aa0"/>
+  <ellipse cx="60" cy="74" rx="34" ry="28" fill="#2a2530"/>
+  <ellipse cx="45" cy="74" rx="9" ry="10" fill="#ffd34d"/>
+  <ellipse cx="75" cy="74" rx="9" ry="10" fill="#ffd34d"/>
+  <ellipse cx="45" cy="75" rx="4" ry="7" fill="#1a1520"/>
+  <ellipse cx="75" cy="75" rx="4" ry="7" fill="#1a1520"/>
+  <circle cx="43" cy="71" r="2.4" fill="#fff"/>
+  <circle cx="73" cy="71" r="2.4" fill="#fff"/>
+  <path d="M57 83 L63 83 L60 87 Z" fill="#e58aa0"/>
+  <path d="M60 87 Q55 92 51 89 M60 87 Q65 92 69 89" stroke="#e8d6c0" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M30 82 L18 80 M30 86 L18 88 M90 82 L102 80 M90 86 L102 88" stroke="#e8d6c0" stroke-width="1.4" stroke-linecap="round"/>
+  <ellipse cx="34" cy="86" rx="4.5" ry="2.8" fill="#ff8f8f" opacity=".45"/>
+  <ellipse cx="86" cy="86" rx="4.5" ry="2.8" fill="#ff8f8f" opacity=".45"/>
+  <rect x="42" y="95" width="36" height="8" rx="4" fill="var(--accent)"/>
+  <g transform="rotate(10 60 46)">
+    <ellipse cx="60" cy="46" rx="26" ry="5.5" fill="var(--hat)"/>
+    <path d="M44 45 C50 33 56 26 68 20 C65 30 70 38 76 45 Z" fill="var(--hat)"/>
+    <path d="M45 43 Q60 50 75 43 L76 47 Q60 54 44 48 Z" fill="var(--primary)"/>
+  </g>
+</svg>
+{%- endmacro %}
+
+{# One character with an optional speech bubble. Separate several lines with | and click to cycle. #}
+{% macro figure(name, says='') -%}
+<div class="chibi chibi-{{ name }}" {% if says %}tabindex="0" data-says="{{ says }}"{% endif %}>
+  {% if says %}<p class="bubble" role="status">{{ says.split('|')[0] }}</p>{% endif %}
+  {% if name == 'girl' %}{{ student('girl') }}
+  {% elif name == 'boy' %}{{ student('boy', hair='#241a1a') }}
+  {% elif name == 'owl' %}{{ owl() }}
+  {% elif name == 'pumpkin' %}{{ pumpkin() }}
+  {% elif name == 'cat' %}{{ cat() }}
+  {% endif %}
+</div>
+{%- endmacro %}
