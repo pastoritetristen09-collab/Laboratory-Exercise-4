@@ -1,0 +1,90 @@
+{% set ep = request.endpoint %}
+<!DOCTYPE html>
+<html lang="en" data-house="gryffindor" data-font="storybook">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Tristen's Autumn Tower{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=IM+Fell+English+SC&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@400;700;800&family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+</head>
+<body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav">
+        <div class="nav-inner">
+            <a class="brand" href="{{ url_for('index') }}">Tristen's Tower</a>
+            <nav class="nav-links" aria-label="Main">
+                <a href="{{ url_for('index') }}" {% if ep == 'index' %}aria-current="page"{% endif %}>Home</a>
+                <a href="{{ url_for('profile') }}" {% if ep in ('profile', 'code_view') %}aria-current="page"{% endif %}>Profile</a>
+                <a href="{{ url_for('contact') }}" {% if ep == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+                <a href="{{ url_for('work') }}" {% if ep == 'work' %}aria-current="page"{% endif %}>Work</a>
+                <a href="{{ url_for('linkedlist_view') }}" {% if ep == 'linkedlist_view' %}aria-current="page"{% endif %}>Linked List</a>
+                <a href="{{ url_for('stacks') }}" {% if ep == 'stacks' %}aria-current="page"{% endif %}>Stacks</a>
+                <a href="{{ url_for('fun') }}" {% if ep == 'fun' %}aria-current="page"{% endif %}>Fun</a>
+            </nav>
+            <button class="theme-btn" id="themeBtn" type="button" aria-expanded="false" aria-controls="themePanel">Theme</button>
+        </div>
+    </header>
+
+    <div class="toasts" aria-live="polite">
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        <div class="toast toast-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <aside class="theme-panel" id="themePanel" hidden aria-label="Theme settings">
+        <div class="tp-head">
+            <h2>Make it yours</h2>
+            <button class="tp-close" type="button" id="themeClose" aria-label="Close theme settings">&times;</button>
+        </div>
+
+        <h3>House</h3>
+        <div class="chips" id="houseChips">
+            <button type="button" class="chip" data-house="gryffindor"><i style="background:#a52a22"></i>Gryffindor</button>
+            <button type="button" class="chip" data-house="hufflepuff"><i style="background:#f3c53a"></i>Hufflepuff</button>
+            <button type="button" class="chip" data-house="ravenclaw"><i style="background:#2c5aa6"></i>Ravenclaw</button>
+            <button type="button" class="chip" data-house="slytherin"><i style="background:#1f7a4c"></i>Slytherin</button>
+            <button type="button" class="chip" data-house="parchment"><i style="background:#f0e0bb"></i>Parchment (light)</button>
+        </div>
+
+        <h3>Your own colors</h3>
+        <div class="pickers">
+            <label>Background <input type="color" id="pickBg"></label>
+            <label>Main color <input type="color" id="pickPrimary"></label>
+            <label>Gold accent <input type="color" id="pickAccent"></label>
+        </div>
+
+        <h3>Lettering</h3>
+        <div class="chips" id="fontChips">
+            <button type="button" class="chip" data-font="storybook">Storybook</button>
+            <button type="button" class="chip" data-font="modern">Modern</button>
+            <button type="button" class="chip" data-font="typewriter">Typewriter</button>
+        </div>
+
+        <h3>Floating things</h3>
+        <div class="chips" id="fxChips">
+            <button type="button" class="chip" data-effect="leaves">Falling leaves</button>
+            <button type="button" class="chip" data-effect="candles">Floating candles</button>
+            <button type="button" class="chip" data-effect="sparkles">Sparkles</button>
+            <button type="button" class="chip" data-effect="none">None</button>
+        </div>
+
+        <button type="button" class="btn btn-quiet" id="themeReset">Reset to default</button>
+    </aside>
+
+    <main class="page" id="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="foot">
+        <p>Tristen Marie G. Pastorite, BSCPE 2-1. Built with Flask for Laboratory Exercise 4.</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

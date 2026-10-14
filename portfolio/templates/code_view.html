@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ name }} - Tristen's Autumn Tower{% endblock %}
+{% block content %}
+<header class="page-head">
+    <div>
+        <h1 class="code-title">{{ name }}</h1>
+        <p class="lede">{{ lines }} line{{ 's' if lines != 1 }}</p>
+    </div>
+    <div class="row">
+        <button class="btn" type="button" data-copy-target="#codeText">Copy code</button>
+        <a class="btn btn-quiet" href="{{ url_for('code_download', filename=name) }}">Download</a>
+        <a class="btn btn-quiet" href="{{ url_for('profile') }}">Back to profile</a>
+    </div>
+</header>
+<pre class="codeblock"><code id="codeText">{{ code }}</code></pre>
+{% endblock %}

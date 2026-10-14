@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% import "_chibi.html" as c %}
+{% block title %}Stacks - Tristen's Autumn Tower{% endblock %}
+
+{% macro stack_view(values, top_label=true) %}
+<div class="st-well">
+    {% if values %}
+    {% for v in values %}
+    <div class="st-node{{ ' is-top' if loop.first }}">
+        {% if loop.first and top_label %}<span class="st-top">TOP</span>{% endif %}
+        <span class="st-data">{{ v }}</span>
+        <span class="st-next">next &#8595;</span>
+    </div>
+    {% endfor %}
+    <div class="st-null">None</div>
+    {% else %}
+    <p class="empty st-empty">Empty stack</p>
+    {% endif %}
+</div>
+{% endmacro %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <h1>Stacks</h1>
+        <p class="lede">Last in, first out. Like a pile of books, you can only add to the top and take from the top. Try it, then see what stacks are good for.</p>
+    </div>
+    <div class="chibi-row">
+        {{ c.figure('boy', 'LIFO: last in, first out!|The newest book is always on top.') }}
+        {{ c.figure('pumpkin', 'Push me on the stack!|I am a very stackable pumpkin.') }}
+    </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Stack tools">
+    <a href="{{ url_for('stacks', tool='stack') }}" role="tab" data-tab="stack" aria-selected="{{ 'true' if tool == 'stack' else 'false' }}">Push, pop, peek</a>
+    <a href="{{ url_for('stacks', tool='undo') }}" role="tab" data-tab="undo" aria-selected="{{ 'true' if tool == 'undo' else 'false' }}">Undo typing</a>
+    <a href="{{ url_for('stacks', tool='reverse') }}" role="tab" data-tab="reverse" aria-selected="{{ 'true' if tool == 'reverse' else 'false' }}">Reverse a string</a>
+    <a href="{{ url_for('stacks', tool='convert') }}" role="tab" data-tab="convert" aria-selected="{{ 'true' if tool == 'convert' else 'false' }}">Number bases</a>
+    <a href="{{ url_for('stacks', tool='postfix') }}" role="tab" data-tab="postfix" aria-selected="{{ 'true' if tool == 'postfix' else 'false' }}">Infix to postfix</a>
+</div>
+
+{# ---------- Push / pop / peek ---------- #}
+<section class="panel wide {{ 'is-active' if tool == 'stack' }}" data-panel="stack" role="tabpanel">
+    <h2>Push, pop, and peek</h2>
+    <p class="muted">This stack is built from linked nodes. <b>Push</b> adds on top, <b>pop</b> removes the top, <b>peek</b> just looks at the top.</p>
+    <div class="st-layout">
+        <form method="post" action="{{ url_for('stacks', tool='stack') }}" class="st-controls">
+            <input type="hidden" name="tool" value="stack">
+            <label>Value to push
+                <input type="text" name="value" maxlength="40" placeholder="e.g. Demian">
+            </label>
+            <div class="row">
+                <button class="btn" type="submit" name="action" value="push">Push</button>
+                <button class="btn btn-quiet" type="submit" name="action" value="pop" {{ 'disabled' if not items }}>Pop</button>
+                <button class="btn btn-quiet" type="submit" name="action" value="peek" {{ 'disabled' if not items }}>Peek</button>
+            </div>
+            <button class="btn btn-quiet btn-small" type="submit" name="action" value="clear" {{ 'disabled' if not items }}>Empty the stack</button>
+            <div class="ll-explain st-how">
+                <p class="small"><b>push:</b> the new node's next points to the old top, then top moves to the new node.</p>
+                <p class="small"><b>pop:</b> save the top node, move top down to top.next, then return the saved data.</p>
+            </div>
+        </form>
+        {{ stack_view(items) }}
+    </div>
+</section>
+
+{# ---------- Undo ---------- #}
+<section class="panel wide {{ 'is-active' if tool == 'undo' }}" data-panel="undo" role="tabpanel">
+    <h2>Undo typing</h2>
+    <p class="muted">Every keystroke is pushed onto a stack. Pressing Undo pops the last one, so the newest letter disappears first. Type at the end of the box.</p>
+    <div class="st-layout">
+        <div class="st-controls">
+            <label>Type here
+                <input type="text" id="undoInput" autocomplete="off" placeholder="try typing: book">
+            </label>
+            <div class="row">
+                <button class="btn" type="button" id="undoBtn">Undo (pop)</button>
+                <button class="btn btn-quiet" type="button" id="undoClear">Clear</button>
+            </div>
+            <p class="small muted" id="undoMsg" aria-live="polite">Nothing typed yet.</p>
+        </div>
+        <div class="st-well" id="undoStack"><p class="empty st-empty">Empty stack</p></div>
+    </div>
+</section>
+
+{# ---------- Reverse ---------- #}
+<section class="panel {{ 'is-active' if tool == 'reverse' }}" data-panel="reverse" role="tabpanel">
+    <h2>Reverse a string</h2>
+    <p class="muted">Push each character from left to right, then pop them all. The last character in is the first one out, so the text comes out reversed. Time: O(n).</p>
+    <form method="post" action="{{ url_for('stacks', tool='reverse') }}">
+        <input type="hidden" name="tool" value="reverse">
+        <label>Your text
+            <input type="text" name="text" maxlength="60" placeholder="e.g. IBMRD" value="{{ form.get('text', '') if tool == 'reverse' else '' }}" required>
+        </label>
+        <button class="btn" type="submit">Reverse it</button>
+    </form>
+    {% if tool == 'reverse' %}
+        {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+        {% if result %}
+        <div class="result" role="status">
+            <p class="result-label">Reversed</p>
+            <p class="result-text" id="revText">{{ result.value }}</p>
+            <p class="small muted">Pushed in this order: {{ result.pushes | join(' ') }}</p>
+            <p class="small muted">Popped in this order: {{ result.pops | join(' ') }}</p>
+        </div>
+        {% endif %}
+    {% endif %}
+</section>
+
+{# ---------- Base conversion ---------- #}
+<section class="panel {{ 'is-active' if tool == 'convert' }}" data-panel="convert" role="tabpanel">
+    <h2>Decimal to binary, octal, or hexadecimal</h2>
+    <p class="muted">Divide by the base again and again. Push each remainder, then pop them all to read the answer. Example: 84 is 1010100 in binary, 124 in octal, and 54 in hexadecimal.</p>
+    <form method="post" action="{{ url_for('stacks', tool='convert') }}">
+        <input type="hidden" name="tool" value="convert">
+        <label>Decimal number
+            <input type="number" name="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 84" value="{{ form.get('number', '') if tool == 'convert' else '' }}" required>
+        </label>
+        {% set base = form.get('base', '2') if tool == 'convert' else '2' %}
+        <fieldset class="segmented">
+            <legend>Convert to</legend>
+            <label><input type="radio" name="base" value="2" {{ 'checked' if base == '2' }}><span>Base 2 (binary)</span></label>
+            <label><input type="radio" name="base" value="8" {{ 'checked' if base == '8' }}><span>Base 8 (octal)</span></label>
+            <label><input type="radio" name="base" value="16" {{ 'checked' if base == '16' }}><span>Base 16 (hex)</span></label>
+        </fieldset>
+        <button class="btn" type="submit">Convert</button>
+    </form>
+    {% if tool == 'convert' %}
+        {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+        {% if result %}
+        <div class="result" role="status">
+            <p class="result-label">{{ result.number }} in base {{ result.base }}</p>
+            <p class="result-number">{{ result.value }}</p>
+            <table class="trace">
+                <thead><tr><th>Divide</th><th>Remainder (pushed)</th></tr></thead>
+                <tbody>
+                    {% for s in result.steps %}<tr><td>{{ s.line }}</td><td>{{ s.remainder }}</td></tr>{% endfor %}
+                </tbody>
+            </table>
+            <p class="small muted">Now pop from the top: the last remainder pushed comes out first, giving {{ result.value }}.</p>
+        </div>
+        {% endif %}
+    {% endif %}
+</section>
+
+{# ---------- Infix to postfix ---------- #}
+<section class="panel wide {{ 'is-active' if tool == 'postfix' }}" data-panel="postfix" role="tabpanel">
+    <h2>Infix to postfix</h2>
+    <p class="muted">Infix puts the operator between operands (<b>A + B</b>). Postfix puts it after (<b>A B +</b>) and needs no brackets. A stack of operators does the work, and the table below shows every step.</p>
+    <form method="post" action="{{ url_for('stacks', tool='postfix') }}" class="postfix-form">
+        <input type="hidden" name="tool" value="postfix">
+        <label>Infix expression
+            <input type="text" id="exprInput" name="expr" maxlength="80" placeholder="e.g. A * (B + C) / D" value="{{ form.get('expr', '') if tool == 'postfix' else '' }}" required>
+        </label>
+        <div class="row">
+            <button class="btn" type="submit">Convert to postfix</button>
+        </div>
+        <p class="small muted">Try an example:
+            <button class="linkish" type="button" data-example="(A+B+C)*D">(A+B+C)*D</button>,
+            <button class="linkish" type="button" data-example="A * (B + C) / D">A * (B + C) / D</button>,
+            <button class="linkish" type="button" data-example="(A * (B + C^D))">(A * (B + C^D))</button>,
+            <button class="linkish" type="button" data-example="3 + 4 * 5">3 + 4 * 5</button>
+        </p>
+    </form>
+    {% if tool == 'postfix' %}
+        {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+        {% if result %}
+        <div class="result" role="status">
+            <p class="result-label">{{ result.expr }} in postfix</p>
+            <p class="result-number" id="postfixText">{{ result.value }}</p>
+            {% if result.evaluated is not none %}<p class="small muted">All operands are numbers, so the value is <b>{{ result.evaluated }}</b>.</p>{% endif %}
+            <button class="btn btn-small btn-quiet" type="button" data-copy-target="#postfixText">Copy postfix</button>
+        </div>
+        <div class="trace-wrap">
+            <table class="trace">
+                <thead><tr><th>Token</th><th>What happens</th><th>Ops stack (bottom to top)</th><th>Output so far</th></tr></thead>
+                <tbody>
+                    {% for s in result.steps %}
+                    <tr><td><b>{{ s.token }}</b></td><td>{{ s.action }}</td><td>{{ s.ops }}</td><td>{{ s.output }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    {% endif %}
+    <details class="ll-explain">
+        <summary>The rules (shunting yard)</summary>
+        <ol>
+            <li>Read the expression left to right.</li>
+            <li><b>Operand</b> (letter or number): add it to the output.</li>
+            <li><b>(</b>: push it on the ops stack.</li>
+            <li><b>)</b>: pop operators to the output until you reach <b>(</b>, then throw the <b>(</b> away.</li>
+            <li><b>Operator</b>: while the top of the ops stack has higher precedence (or equal, for left-associative operators), pop it to the output. Then push the new operator.</li>
+            <li>At the end, pop everything left on the ops stack to the output.</li>
+        </ol>
+        <p class="small muted">Precedence: <b>^</b> is 3 (right associative), <b>* /</b> are 2, <b>+ -</b> are 1 (left associative).</p>
+    </details>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/stacks.js') }}"></script>
+{% endblock %}
