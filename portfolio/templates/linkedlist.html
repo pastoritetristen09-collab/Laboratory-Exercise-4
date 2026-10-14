@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% import "_chibi.html" as c %}
+{% block title %}Linked List - Tristen's Autumn Tower{% endblock %}
+
+{% block content %}
+<header class="page-head">
+    <div>
+        <h1>Linked List</h1>
+        <p class="lede">Each node points to the next one. Add or remove at the head, the tail, or any position. Position 1 is the head.</p>
+    </div>
+    <div class="chibi-row">
+        {{ c.figure('pumpkin', 'Every node is a little pumpkin.|The tail always points to NULL.') }}
+        {{ c.figure('cat', 'Careful, removing the head moves everyone up!') }}
+    </div>
+</header>
+
+<section class="ll-board" aria-label="Current list" id="llBoard" data-items='{{ elements | tojson | forceescape }}'>
+    <p class="ll-size">{{ size }} node{{ 's' if size != 1 }}. Click a <b>+</b> between nodes to choose where a new node goes.</p>
+    <div class="ll-track">
+        <button type="button" class="ll-slot" data-pos="1" aria-label="Insert at position 1, before the head"><span>+</span></button>
+        {% if elements %}
+        <span class="ll-pointer">HEAD</span>
+        {% for item in elements %}
+        <div class="ll-node{{ ' is-head' if loop.first }}{{ ' is-tail' if loop.last }}{{ ' is-new' if new_pos == loop.index }}">
+            <span class="ll-index">{{ loop.index }}</span>
+            <span class="ll-value">{{ item }}</span>
+            {% if loop.first and loop.last %}<span class="ll-tag">head &amp; tail</span>
+            {% elif loop.first %}<span class="ll-tag">head</span>
+            {% elif loop.last %}<span class="ll-tag">tail</span>{% endif %}
+        </div>
+        <button type="button" class="ll-slot has-arrow" data-pos="{{ loop.index + 1 }}" aria-label="Insert at position {{ loop.index + 1 }}, after {{ item }}"><span>&#10140;</span></button>
+        {% endfor %}
+        <span class="ll-null">NULL</span>
+        {% else %}
+        <p class="empty">The list is empty. Add your first node below.</p>
+        {% endif %}
+    </div>
+    <p class="ll-preview" id="llPreview" aria-live="polite"></p>
+</section>
+
+<details class="ll-explain" open>
+    <summary>How does insertion work?</summary>
+    <p>A node only knows about the <b>next</b> node. To put a new node in the middle, we just re-connect two arrows. Example: insert <b>Cider</b> at position 2 into <b>Pumpkin &#10140; Acorn</b>.</p>
+    <ol>
+        <li><b>Walk</b> from the head to the node just before the spot (position 1, Pumpkin).</li>
+        <li><b>Hook the new node forward:</b> Cider's next = Pumpkin's old next (Acorn).</li>
+        <li><b>Hook the old node to the new one:</b> Pumpkin's next = Cider.</li>
+    </ol>
+    <p class="ll-chain">Pumpkin &#10140; <b>Cider</b> &#10140; Acorn</p>
+    <p class="muted small">Position 1 means the head (the new node goes first). Position {{ size + 1 }} right now means the tail (the new node goes last).</p>
+</details>
+
+<div class="ll-controls">
+    <form method="post" class="ll-card" aria-labelledby="add-title">
+        <h2 id="add-title">Add a node</h2>
+        <label>Value
+            <input type="text" id="addValue" name="value" maxlength="40" placeholder="e.g. Acorn">
+        </label>
+        <div class="row">
+            <button class="btn" type="submit" name="action" value="add_head">Add to head</button>
+            <button class="btn" type="submit" name="action" value="add_tail">Add to tail</button>
+        </div>
+        <div class="row row-end">
+            <label class="grow">Position (new node's spot)
+                <input type="number" id="addPos" name="position" min="1" max="{{ size + 1 }}" inputmode="numeric" placeholder="1 to {{ size + 1 }}">
+            </label>
+            <button class="btn btn-quiet" type="submit" name="action" value="add_at">Insert at position</button>
+        </div>
+        <p class="small muted">Tip: click a <b>+</b> in the list above to fill this in.</p>
+    </form>
+
+    <form method="post" class="ll-card" aria-labelledby="remove-title">
+        <h2 id="remove-title">Remove a node</h2>
+        <div class="row">
+            <button class="btn btn-danger" type="submit" name="action" value="remove_head" {{ 'disabled' if not size }}>Remove head</button>
+            <button class="btn btn-danger" type="submit" name="action" value="remove_tail" {{ 'disabled' if not size }}>Remove tail</button>
+        </div>
+        <div class="row row-end">
+            <label class="grow">Position
+                <input type="number" name="position" min="1" max="{{ size if size else 1 }}" inputmode="numeric" placeholder="1 to {{ size if size else 1 }}">
+            </label>
+            <button class="btn btn-quiet" type="submit" name="action" value="remove_at" {{ 'disabled' if not size }}>Remove at position</button>
+        </div>
+        <button class="btn btn-quiet btn-small" type="submit" name="action" value="clear" {{ 'disabled' if not size }}>Clear the whole list</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/linkedlist.js') }}"></script>
+{% endblock %}
