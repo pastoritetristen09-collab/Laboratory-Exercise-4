@@ -5,6 +5,7 @@ Open: http://127.0.0.1:5000
 """
 import json
 import math
+import re
 import uuid
 from pathlib import Path
 
@@ -35,7 +36,7 @@ CONTACT = {
     "email": "pastoritetristen09@gmail.com",
     "facebook_name": "Tristen Pastorite",
     "facebook_url": "https://www.facebook.com/tristen.pastorite",
-    "phone": "09948705281",
+    "phone": "0948705281",
 }
 
 DEFAULT_PROFILE = {
@@ -439,6 +440,246 @@ def linkedlist_view():
     items = my_linked_list.to_list()
     new_pos = session.pop("ll_new", None)
     return render_template("linkedlist.html", elements=items, size=len(items), new_pos=new_pos)
+
+
+# --------------------------------------------------------------------------
+# Stack (linked-list version, same as the lecture's stack.py). Top = newest.
+# --------------------------------------------------------------------------
+class Stack:
+    def __init__(self):
+        self.top = None
+
+    def push(self, data):
+        new_node = Node(data)
+        if self.top:
+            new_node.next = self.top
+        self.top = new_node
+
+    def pop(self):
+        if self.top is None:
+            return None
+        popped_node = self.top
+        self.top = self.top.next
+        popped_node.next = None
+        return popped_node.data
+
+    def peek(self):
+        return self.top.data if self.top else None
+
+    def is_empty(self):
+        return self.top is None
+
+    def clear(self):
+        self.top = None
+
+    def to_list(self):
+        """Top to bottom."""
+        items, current = [], self.top
+        while current:
+            items.append(current.data)
+            current = current.next
+        return items
+
+
+my_stack = Stack()
+for book in ("The misunderstanding", "Persepolis", "1984"):
+    my_stack.push(book)
+
+
+# ----- Stack applications --------------------------------------------------
+DIGITS = "0123456789ABCDEF"
+PREC = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3}
+RIGHT_ASSOC = {"^"}
+
+
+def reverse_string(text):
+    stack, pushes = Stack(), []
+    for ch in text:
+        stack.push(ch)
+        pushes.append(ch)
+    pops = []
+    while not stack.is_empty():
+        pops.append(stack.pop())
+    return pushes, pops
+
+
+def convert_base(number, base):
+    """Divide repeatedly, push each remainder, then pop to read the answer."""
+    stack, steps = Stack(), []
+    if number == 0:
+        stack.push("0")
+        steps.append({"line": "0 / %d = 0" % base, "remainder": "0"})
+    while number > 0:
+        quotient, remainder = divmod(number, base)
+        digit = DIGITS[remainder]
+        steps.append({"line": f"{number} / {base} = {quotient}", "remainder": digit})
+        stack.push(digit)
+        number = quotient
+    out = []
+    while not stack.is_empty():
+        out.append(stack.pop())
+    return steps, "".join(out)
+
+
+def tokenize(expr):
+    tokens, pos = [], 0
+    pattern = re.compile(r"\s*(?:([A-Za-z0-9.]+)|([-+*/^()]))")
+    expr = expr.strip()
+    while pos < len(expr):
+        match = pattern.match(expr, pos)
+        if not match:
+            bad = expr[pos:].strip()[:1]
+            raise ValueError(f"Unexpected character '{bad}'. Use letters, numbers, + - * / ^ and brackets.")
+        tokens.append(match.group(1) or match.group(2))
+        pos = match.end()
+    if not tokens:
+        raise ValueError("Type an infix expression first, like A * (B + C) / D.")
+    return tokens
+
+
+def infix_to_postfix(tokens):
+    ops, output, steps = Stack(), [], []
+    expect_operand = True
+
+    def snap(token, action):
+        steps.append({"token": token, "action": action,
+                      "ops": " ".join(reversed(ops.to_list())) or "(empty)",
+                      "output": " ".join(output) or "(empty)"})
+
+    for tok in tokens:
+        if tok not in PREC and tok not in "()":
+            if not expect_operand:
+                raise ValueError(f"Missing an operator before '{tok}'.")
+            output.append(tok)
+            expect_operand = False
+            snap(tok, "Operand: add to output")
+        elif tok == "(":
+            if not expect_operand:
+                raise ValueError("Missing an operator before '('.")
+            ops.push(tok)
+            snap(tok, "Opening bracket: push to ops")
+        elif tok == ")":
+            if expect_operand:
+                raise ValueError("Something is missing before ')'.")
+            while ops.peek() is not None and ops.peek() != "(":
+                output.append(ops.pop())
+            if ops.peek() is None:
+                raise ValueError("There is a ')' without a matching '('.")
+            ops.pop()
+            snap(tok, "Closing bracket: pop ops until '(', then discard '('")
+        else:
+            if expect_operand:
+                raise ValueError(f"Missing an operand before '{tok}'. (Negative numbers are not supported.)")
+            popped = []
+            while ops.peek() not in (None, "("):
+                top = ops.peek()
+                if PREC[top] > PREC[tok] or (PREC[top] == PREC[tok] and tok not in RIGHT_ASSOC):
+                    popped.append(ops.peek())
+                    output.append(ops.pop())
+                else:
+                    break
+            ops.push(tok)
+            expect_operand = True
+            note = f"Operator: popped {' '.join(popped)} first, then push" if popped else "Operator: push to ops"
+            snap(tok, note)
+
+    if expect_operand:
+        raise ValueError("The expression ends too early. It needs an operand at the end.")
+    while not ops.is_empty():
+        top = ops.pop()
+        if top == "(":
+            raise ValueError("There is a '(' without a matching ')'.")
+        output.append(top)
+        snap("end", f"End of expression: pop '{top}' to output")
+    return output, steps
+
+
+def evaluate_postfix(postfix):
+    """Returns a number when every operand is numeric, otherwise None."""
+    stack = Stack()
+    for tok in postfix:
+        if tok in PREC:
+            right, left = stack.pop(), stack.pop()
+            if tok == "+": stack.push(left + right)
+            elif tok == "-": stack.push(left - right)
+            elif tok == "*": stack.push(left * right)
+            elif tok == "/":
+                if right == 0:
+                    raise ValueError("Division by zero while evaluating.")
+                stack.push(left / right)
+            else: stack.push(left ** right)
+        else:
+            try:
+                stack.push(float(tok))
+            except ValueError:
+                return None
+    return stack.pop()
+
+
+@app.route("/stacks", methods=["GET", "POST"])
+def stacks():
+    tool = request.values.get("tool", "stack")
+    if tool not in ("stack", "undo", "reverse", "convert", "postfix"):
+        tool = "stack"
+
+    if request.method == "POST" and tool == "stack":
+        action = request.form.get("action", "")
+        value = request.form.get("value", "").strip()
+        if action == "push":
+            if not value:
+                flash("Type a value to push.", "error")
+            else:
+                my_stack.push(value)
+                flash(f'Pushed "{value}" onto the top.', "ok")
+        elif action == "pop":
+            if my_stack.is_empty():
+                flash("The stack is empty, so there is nothing to pop.", "error")
+            else:
+                flash(f'Popped "{my_stack.pop()}" from the top.', "ok")
+        elif action == "peek":
+            if my_stack.is_empty():
+                flash("The stack is empty, so there is no top element.", "error")
+            else:
+                flash(f'The top element is "{my_stack.peek()}". (Peek does not remove it.)', "ok")
+        elif action == "clear":
+            my_stack.clear()
+            flash("The stack is now empty.", "ok")
+        return redirect(url_for("stacks", tool="stack"))
+
+    result, error = None, None
+    if request.method == "POST":
+        try:
+            if tool == "reverse":
+                text = request.form.get("text", "")
+                if not text.strip():
+                    raise ValueError("Type a word or sentence to reverse.")
+                pushes, pops = reverse_string(text)
+                result = {"pushes": pushes, "pops": pops, "value": "".join(pops)}
+            elif tool == "convert":
+                raw = request.form.get("number", "").strip()
+                if not raw.isdigit():
+                    raise ValueError("Enter a whole number that is zero or more.")
+                number = int(raw)
+                if number > 10 ** 12:
+                    raise ValueError("Please keep the number below one trillion.")
+                base = int(request.form.get("base", "2"))
+                if base not in (2, 8, 16):
+                    raise ValueError("Pick base 2, 8, or 16.")
+                steps, answer = convert_base(number, base)
+                result = {"number": number, "base": base, "steps": steps, "value": answer}
+            elif tool == "postfix":
+                expr = request.form.get("expr", "")
+                tokens = tokenize(expr)
+                postfix, steps = infix_to_postfix(tokens)
+                value = evaluate_postfix(postfix)
+                result = {"expr": expr.strip(), "value": " ".join(postfix), "steps": steps,
+                          "evaluated": fmt(value) if value is not None else None}
+        except ValueError as exc:
+            error = str(exc)
+
+    return render_template("stacks.html", tool=tool, items=my_stack.to_list(),
+                           result=result, error=error,
+                           form=request.form if request.method == "POST" else {})
 
 
 @app.route("/fun")
