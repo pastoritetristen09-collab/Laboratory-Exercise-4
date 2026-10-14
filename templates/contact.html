@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% import "_chibi.html" as c %}
+{% block title %}Contact - Tristen's Autumn Tower{% endblock %}
+{% block content %}
+<header class="page-head">
+    <div>
+        <h1>Contact</h1>
+        <p class="lede">Send me an owl. Tap any line below and it opens your email, Facebook, or phone app.</p>
+    </div>
+    <div class="chibi-row">
+        {{ c.figure('owl', 'Owl post, delivered fast!|Tap the email to write to Tristen.') }}
+        {{ c.figure('girl', "I'd love to hear from you!") }}
+    </div>
+</header>
+
+<p class="contact-name">{{ contact.name }}</p>
+
+<ul class="contact-list">
+    <li>
+        <a class="contact-link" href="mailto:{{ contact.email }}">
+            <span class="contact-label">Email</span>
+            <span class="contact-value">{{ contact.email }}</span>
+        </a>
+        <button class="btn btn-small btn-quiet" type="button" data-copy="{{ contact.email }}">Copy</button>
+    </li>
+    <li>
+        <a class="contact-link" href="{{ contact.facebook_url }}" target="_blank" rel="noopener">
+            <span class="contact-label">Facebook</span>
+            <span class="contact-value">{{ contact.facebook_name }}</span>
+        </a>
+        <button class="btn btn-small btn-quiet" type="button" data-copy="{{ contact.facebook_name }}">Copy</button>
+    </li>
+    <li>
+        <a class="contact-link" href="tel:{{ contact.phone }}">
+            <span class="contact-label">Phone</span>
+            <span class="contact-value">{{ contact.phone }}</span>
+        </a>
+        <a class="btn btn-small btn-quiet" href="sms:{{ contact.phone }}">Text</a>
+        <button class="btn btn-small btn-quiet" type="button" data-copy="{{ contact.phone }}">Copy</button>
+    </li>
+</ul>
+
+<section class="owl-post" aria-labelledby="owl-title">
+    <h2 id="owl-title">Write an owl post</h2>
+    <p class="muted">This opens your email app with the message ready to send.</p>
+    <form action="mailto:{{ contact.email }}" method="get" enctype="text/plain">
+        <label>Subject
+            <input type="text" name="subject" value="Hello from your portfolio" required>
+        </label>
+        <label>Message
+            <textarea name="body" rows="4" placeholder="Hi Tristen, ..." required></textarea>
+        </label>
+        <button class="btn" type="submit">Open in my email app</button>
+    </form>
+</section>
+{% endblock %}
